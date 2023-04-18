@@ -39,11 +39,9 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  // res.send("Ok"); // Respond with 'Ok' (we will replace this)
-  // id-longURL key-value pair
   const id = generateRandomString();
   urlDatabase[id] = req.body.longURL;
-  console.log("Data posted:", urlDatabase);
+  res.redirect(`/u/${id}`);
 });
 
 app.get("/urls/new", (req, res) => {
@@ -55,15 +53,16 @@ app.get("/urls/:id", (req, res) => {
     id: req.params.id,
     longURL: urlDatabase[req.params.id],
   };
+  console.log("templateVars", templateVars);
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:id", (req, res) => {
-  // const longURL = ...
-  const longURL = urlDatabase.id;
-  console.log("longURL", longURL);
-  console.log("u doesnt work");
-  res.redirect(longURL);
+  const templateVars = {
+    id: req.params.id,
+    longURL: urlDatabase[req.params.id],
+  };
+  res.render("urls_show", templateVars);
 });
 
 app.get("/hello", (req, res) => {
