@@ -62,6 +62,9 @@ app.get("/u/:id", (req, res) => {
     id: req.params.id,
     longURL: urlDatabase[req.params.id],
   };
+  if (!urlDatabase[req.params.id]) {
+    res.send("The URL doesn't exist.");
+  }
   res.render("urls_show", templateVars);
 });
 
