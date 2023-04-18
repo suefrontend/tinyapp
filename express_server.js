@@ -34,16 +34,16 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
+  console.log("req.body.longURL", req.body.longURL);
   res.render("urls_index", templateVars);
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  // res.send("Ok"); // Respond with 'Ok' (we will replace this)
   // id-longURL key-value pair
-  console.log("req.body.longURL", req.body.longURL);
-  urlDatabase[generateRandomString()] = req.body.longURL;
-  console.log("After submit: urlDatabase", urlDatabase);
+  const id = generateRandomString();
+  urlDatabase[id] = req.body.longURL;
+  console.log("Data posted:", urlDatabase);
 });
 
 app.get("/urls/new", (req, res) => {
@@ -56,6 +56,14 @@ app.get("/urls/:id", (req, res) => {
     longURL: urlDatabase[req.params.id],
   };
   res.render("urls_show", templateVars);
+});
+
+app.get("/u/:id", (req, res) => {
+  // const longURL = ...
+  const longURL = urlDatabase.id;
+  console.log("longURL", longURL);
+  console.log("u doesnt work");
+  res.redirect(longURL);
 });
 
 app.get("/hello", (req, res) => {
