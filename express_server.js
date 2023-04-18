@@ -6,7 +6,16 @@ app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 
 const generateRandomString = () => {
-  return Math.random().toString(36).substring(2, 9);
+  let result = "";
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const charactersLength = characters.length;
+  let counter = 0;
+  while (counter <= 6) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    counter += 1;
+  }
+  return result;
 };
 
 const urlDatabase = {
@@ -32,7 +41,9 @@ app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
   res.send("Ok"); // Respond with 'Ok' (we will replace this)
   // id-longURL key-value pair
-  urlDatabase;
+  console.log("req.body.longURL", req.body.longURL);
+  urlDatabase[generateRandomString()] = req.body.longURL;
+  console.log("After submit: urlDatabase", urlDatabase);
 });
 
 app.get("/urls/new", (req, res) => {
