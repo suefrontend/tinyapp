@@ -4,8 +4,17 @@ const app = express();
 const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
+
+//*******************
+// Middlewares
+//*******************
+
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+//*******************
+// Generate String
+//*******************
 
 const generateRandomString = () => {
   let result = "";
@@ -59,7 +68,7 @@ app.get("/", (req, res) => {
 });
 
 //*******************
-// My URLs
+// My URLs Page
 //*******************
 
 app.get("/urls", (req, res) => {
@@ -71,7 +80,7 @@ app.get("/urls", (req, res) => {
 });
 
 //*******************
-// Login
+// Login - POST
 //*******************
 
 app.post("/login", (req, res) => {
@@ -80,7 +89,7 @@ app.post("/login", (req, res) => {
 });
 
 //*******************
-// Logout
+// Logout - POST
 //*******************
 
 app.post("/logout", (req, res) => {
@@ -89,7 +98,7 @@ app.post("/logout", (req, res) => {
 });
 
 //*******************
-// Create Account
+// Register Page
 //*******************
 
 app.get("/register", (req, res) => {
@@ -97,7 +106,25 @@ app.get("/register", (req, res) => {
 });
 
 //*******************
-// Create New URL
+// Register - POST
+//*******************
+
+app.post("/register", (req, res) => {
+  // Add new user to user object
+  const id = generateRandomString();
+  const newUser = {
+    id,
+    email: req.body.email,
+    password: req.body.password,
+  };
+  users[id] = newUser;
+  res.cookie("user_id", id);
+  console.log("users", users);
+  res.redirect("/urls");
+});
+
+//*******************
+// Add URL - POST
 //*******************
 
 app.post("/urls", (req, res) => {
@@ -106,12 +133,16 @@ app.post("/urls", (req, res) => {
   res.redirect(`/u/${id}`);
 });
 
+//*******************
+// Add URL Page
+//*******************
+
 app.get("/urls/new", (req, res) => {
   res.render("urls_new", { username: req.cookies["username"] });
 });
 
 //*******************
-// Sinle URL
+// Sinle URL Page
 //*******************
 
 app.get("/u/:id", (req, res) => {
@@ -138,7 +169,7 @@ app.get("/urls/:id", (req, res) => {
 });
 
 //*******************
-// Edit URL
+// Edit URL - POST
 //*******************
 
 app.post("/urls/:id", (req, res) => {
@@ -148,7 +179,7 @@ app.post("/urls/:id", (req, res) => {
 });
 
 //*******************
-// Delete URL
+// Delete URL - POST
 //*******************
 
 app.post("/urls/:id/delete", (req, res) => {
