@@ -63,7 +63,16 @@ const generateRandomString = () => {
 // Check Email Exist
 //*******************
 
-// getUserByEmail(req.body.email, id);
+const getUserByEmail = (newUser) => {
+  for (const user in users) {
+    const currentUser = users[user].email;
+
+    if (currentUser === newUser) {
+      return true;
+    }
+  }
+  return false;
+};
 
 //*******************
 // Home Page
@@ -103,8 +112,12 @@ app.get("/login", (req, res) => {
 //*******************
 
 app.post("/login", (req, res) => {
-  // TODO: change username
-  // res.cookie("username", req.body.username);
+  // If a user with that e-mail cannot be found, return a response with a 403 status code
+
+  // If a user with that e-mail address is located, compare the password given in the form with the existing user's password. If it does not match, return a response with a 403 status code.
+
+  // If both checks pass, set the user_id cookie with the matching user's random ID, then redirect to /urls.
+
   res.redirect("/urls");
 });
 
@@ -130,40 +143,32 @@ app.get("/register", (req, res) => {
 // Register - POST
 //*******************
 
-const getUserByEmail = (newUser) => {
-  for (const user in users) {
-    const currentUser = users[user].email;
-
-    if (currentUser === newUser) {
-      return true;
-    }
-  }
-  return false;
-};
-
 app.post("/register", (req, res) => {
-  if (req.body.email && req.body.password) {
+  const email = eq.body.email;
+  const password = eq.body.password;
+
+  if (!email || !password) {
+    res.status(400).send("Please fill out all fields");
+  }
+
+  if (email && password) {
     const id = generateRandomString();
 
     const newUser = {
       id,
-      email: req.body.email,
-      password: req.body.password,
+      email,
+      password,
     };
 
-    const userExist = getUserByEmail(req.body.email);
+    const userExist = getUserByEmail(email);
 
     if (userExist) {
-      res.status(400);
-      res.send("User already exist");
+      res.status(400).send("User already exist");
     }
 
     users[id] = newUser;
     res.cookie("user_id", id);
     res.redirect("/urls");
-  } else {
-    res.status(400);
-    res.send("Please fill out all fields");
   }
 });
 
