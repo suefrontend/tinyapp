@@ -87,6 +87,18 @@ app.get("/urls", (req, res) => {
 });
 
 //*******************
+// Login Page
+//*******************
+
+app.get("/login", (req, res) => {
+  const templateVars = {
+    user: users[req.cookies.user_id],
+    urls: urlDatabase,
+  };
+  res.render("user_login", templateVars);
+});
+
+//*******************
 // Login - POST
 //*******************
 
