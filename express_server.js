@@ -13,23 +13,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 //*******************
-// Generate String
-//*******************
-
-const generateRandomString = () => {
-  let result = "";
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  const charactersLength = characters.length;
-  let counter = 0;
-  while (counter <= 6) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    counter += 1;
-  }
-  return result;
-};
-
-//*******************
 // URL Data
 //*******************
 
@@ -60,11 +43,34 @@ const users = {
 };
 
 //*******************
+// Generate String
+//*******************
+
+const generateRandomString = () => {
+  let result = "";
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const charactersLength = characters.length;
+  let counter = 0;
+  while (counter <= 6) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    counter += 1;
+  }
+  return result;
+};
+
+//*******************
+// Check Email Exist
+//*******************
+
+// getUserByEmail(req.body.email, id);
+
+//*******************
 // Home Page
 //*******************
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.redirect("/urls");
 });
 
 //*******************
@@ -112,18 +118,41 @@ app.get("/register", (req, res) => {
 // Register - POST
 //*******************
 
+const getUserByEmail = (newUser) => {
+  for (const user in users) {
+    const currentUser = users[user].email;
+
+    if (currentUser === newUser) {
+      return true;
+    }
+  }
+  return false;
+};
+
 app.post("/register", (req, res) => {
-  // Add new user to user object
-  const id = generateRandomString();
-  const newUser = {
-    id,
-    email: req.body.email,
-    password: req.body.password,
-  };
-  users[id] = newUser;
-  res.cookie("user_id", id);
-  console.log("users", users);
-  res.redirect("/urls");
+  if (req.body.email && req.body.password) {
+    const id = generateRandomString();
+
+    const newUser = {
+      id,
+      email: req.body.email,
+      password: req.body.password,
+    };
+
+    const userExist = getUserByEmail(req.body.email);
+
+    if (userExist) {
+      res.status(400);
+      res.send("User already exist");
+    }
+
+    users[id] = newUser;
+    res.cookie("user_id", id);
+    res.redirect("/urls");
+  } else {
+    res.status(400);
+    res.send("Please fill out all fields");
+  }
 });
 
 //*******************
