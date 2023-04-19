@@ -68,6 +68,14 @@ app.post("/logout", (req, res) => {
 });
 
 //*******************
+// Create Account
+//*******************
+
+app.get("/register", (req, res) => {
+  res.render("user_register");
+});
+
+//*******************
 // Create New URL
 //*******************
 
