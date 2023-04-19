@@ -28,7 +28,7 @@ app.get("/urls.json", (req, res) => {
 });
 
 //*******************
-// Display Home Page
+// Home Page
 //*******************
 
 app.get("/", (req, res) => {
@@ -36,7 +36,7 @@ app.get("/", (req, res) => {
 });
 
 //*******************
-// Display URL List
+// My URLs
 //*******************
 
 app.get("/urls", (req, res) => {
@@ -45,7 +45,16 @@ app.get("/urls", (req, res) => {
 });
 
 //*******************
-// Add New URL
+// Login Page
+//*******************
+
+app.post("/login", (req, res) => {
+  res.cookie("username", req.body.username);
+  res.redirect("/urls");
+});
+
+//*******************
+// Create New URL
 //*******************
 
 app.post("/urls", (req, res) => {
@@ -59,7 +68,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 //*******************
-// Display Sinle URL
+// Sinle URL
 //*******************
 
 app.get("/u/:id", (req, res) => {
