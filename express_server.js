@@ -151,7 +151,8 @@ app.post("/login", (req, res) => {
 //*******************
 
 app.post("/logout", (req, res) => {
-  res.clearCookie(req.cookies.user_id);
+  console.log("req.cookies.user_id", req.cookies.user_id);
+  res.clearCookie("user_id");
   res.redirect("/login");
 });
 
@@ -160,7 +161,10 @@ app.post("/logout", (req, res) => {
 //*******************
 
 app.get("/register", (req, res) => {
-  res.render("user_register");
+  const templateVars = {
+    user: users[req.cookies.user_id],
+  };
+  res.render("user_register", templateVars);
 });
 
 //*******************

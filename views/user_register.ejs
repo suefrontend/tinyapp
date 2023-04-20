@@ -8,10 +8,11 @@
       integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
       crossorigin="anonymous"
     />
-    <title>Create Account - TinyApp Example</title>
+    <title>Register - TinyApp Example</title>
   </head>
 
     <body>
+        <%- include('partials/_header') %>
         <main style="margin: 1em;">
             <h3>Create Account</h3>
         <form method="POST" action="/register">
@@ -28,7 +29,7 @@
                 </div>
             </div>
             <div class="mb-3 row">
-                <button type="submit" class="btn btn-primary mb-3">Create Account</button>
+                <button type="submit" class="btn btn-primary mb-3">Register</button>
             </div>
         </form>
         </main>
