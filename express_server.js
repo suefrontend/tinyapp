@@ -29,16 +29,30 @@ app.get("/urls.json", (req, res) => {
 // Users Data
 //*******************
 
+// Original data
+// const users = {
+//   userRandomID: {
+//     id: "userRandomID",
+//     email: "user@example.com",
+//     password: "purple-monkey-dinosaur",
+//   },
+//   user2RandomID: {
+//     id: "user2RandomID",
+//     email: "user2@example.com",
+//     password: "dishwasher-funk",
+//   },
+// };
+
 const users = {
-  userRandomID: {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur",
+  1: {
+    id: "1",
+    email: "1@example.com",
+    password: "123",
   },
-  user2RandomID: {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk",
+  2: {
+    id: "2",
+    email: "2@example.com",
+    password: "123",
   },
 };
 
@@ -62,17 +76,6 @@ const generateRandomString = () => {
 //*******************
 // Check Email Exist
 //*******************
-
-const getUserByEmail = (newUser) => {
-  for (const user in users) {
-    const currentUser = users[user].email;
-
-    if (currentUser === newUser) {
-      return true;
-    }
-  }
-  return false;
-};
 
 //*******************
 // Home Page
@@ -111,13 +114,39 @@ app.get("/login", (req, res) => {
 // Login - POST
 //*******************
 
+const getUserByEmail = (input) => {
+  let foundUser = null;
+
+  for (const user in users) {
+    if (users[user].email === input) {
+      foundUser = users[user];
+    }
+  }
+  return foundUser;
+};
+
 app.post("/login", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const currentUser = getUserByEmail(email);
+
+  if (!email || !password) {
+    res.status(400).send("Please fill out all fields");
+  }
+
   // If a user with that e-mail cannot be found, return a response with a 403 status code
+  if (!currentUser) {
+    res.status(403).send("Can't find the email");
+  }
 
   // If a user with that e-mail address is located, compare the password given in the form with the existing user's password. If it does not match, return a response with a 403 status code.
+  if (currentUser.email === email && currentUser.password !== password) {
+    res.status(403).send("Password doen't match");
+  }
 
   // If both checks pass, set the user_id cookie with the matching user's random ID, then redirect to /urls.
 
+  res.cookie("user_id", currentUser.id);
   res.redirect("/urls");
 });
 
@@ -144,8 +173,8 @@ app.get("/register", (req, res) => {
 //*******************
 
 app.post("/register", (req, res) => {
-  const email = eq.body.email;
-  const password = eq.body.password;
+  const email = req.body.email;
+  const password = req.body.password;
 
   if (!email || !password) {
     res.status(400).send("Please fill out all fields");
@@ -161,10 +190,11 @@ app.post("/register", (req, res) => {
     };
 
     const userExist = getUserByEmail(email);
+    console.log("userExist", userExist);
 
-    if (userExist) {
-      res.status(400).send("User already exist");
-    }
+    // if (userExist) {
+    //   res.status(400).send("User already exist");
+    // }
 
     users[id] = newUser;
     res.cookie("user_id", id);
