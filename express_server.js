@@ -74,8 +74,19 @@ const generateRandomString = () => {
 };
 
 //*******************
-// Check Email Exist
+// Find User by Email
 //*******************
+
+// const getUserByEmail = (input) => {
+//   let foundUser = null;
+
+//   for (const user in users) {
+//     if (users[user].email === input) {
+//       foundUser = users[user];
+//     }
+//   }
+//   return foundUser;
+// };
 
 //*******************
 // Home Page
@@ -114,17 +125,6 @@ app.get("/login", (req, res) => {
 // Login - POST
 //*******************
 
-const getUserByEmail = (input) => {
-  let foundUser = null;
-
-  for (const user in users) {
-    if (users[user].email === input) {
-      foundUser = users[user];
-    }
-  }
-  return foundUser;
-};
-
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -134,17 +134,13 @@ app.post("/login", (req, res) => {
     res.status(400).send("Please fill out all fields");
   }
 
-  // If a user with that e-mail cannot be found, return a response with a 403 status code
   if (!currentUser) {
     res.status(403).send("Can't find the email");
   }
 
-  // If a user with that e-mail address is located, compare the password given in the form with the existing user's password. If it does not match, return a response with a 403 status code.
   if (currentUser.email === email && currentUser.password !== password) {
     res.status(403).send("Password doen't match");
   }
-
-  // If both checks pass, set the user_id cookie with the matching user's random ID, then redirect to /urls.
 
   res.cookie("user_id", currentUser.id);
   res.redirect("/urls");
@@ -155,7 +151,6 @@ app.post("/login", (req, res) => {
 //*******************
 
 app.post("/logout", (req, res) => {
-  console.log("req.cookies.user_id", req.cookies.user_id);
   res.clearCookie(req.cookies.user_id);
   res.redirect("/urls");
 });
@@ -172,34 +167,42 @@ app.get("/register", (req, res) => {
 // Register - POST
 //*******************
 
+const getUserByEmail = (input) => {
+  let foundUser = null;
+
+  for (const user in users) {
+    console.log("users[user].email", users[user].email);
+    if (users[user].email === input) {
+      foundUser = users[user];
+    }
+  }
+  return foundUser;
+};
+
 app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  const currentUser = getUserByEmail(email);
 
   if (!email || !password) {
-    res.status(400).send("Please fill out all fields");
+    return res.status(400).send("Please fill out all fields");
   }
 
-  if (email && password) {
-    const id = generateRandomString();
-
-    const newUser = {
-      id,
-      email,
-      password,
-    };
-
-    const userExist = getUserByEmail(email);
-    console.log("userExist", userExist);
-
-    // if (userExist) {
-    //   res.status(400).send("User already exist");
-    // }
-
-    users[id] = newUser;
-    res.cookie("user_id", id);
-    res.redirect("/urls");
+  if (currentUser && currentUser.email === email) {
+    return res.status(400).send("User already exist");
   }
+
+  const id = generateRandomString();
+
+  const newUser = {
+    id,
+    email,
+    password,
+  };
+
+  users[id] = newUser;
+  res.cookie("user_id", id);
+  res.redirect("/urls");
 });
 
 //*******************
