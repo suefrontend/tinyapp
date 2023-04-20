@@ -48,6 +48,14 @@ const urlDatabase = {
     longURL: "https://www.google.ca",
     userID: "sgq3y6",
   },
+  J0y1irv: {
+    longURL: "http://test05.com",
+    userID: "aJ48lW",
+  },
+  tANiLG1: {
+    longURL: "http://test.com",
+    userID: "sgq3y6",
+  },
 };
 
 const users = {
@@ -99,6 +107,23 @@ const getUserByEmail = (input) => {
   return foundUser;
 };
 
+// returns the URLs where the userID is equal to the id of the currently logged-in user.
+const urlsForUser = (id) => {
+  // b6UTxQ, J0y1irv
+  const urls = [];
+  const items = [];
+
+  for (const item in urlDatabase) {
+    if (urlDatabase[item].userID === id) {
+      console.log("item", item);
+      urls.push(item);
+      items.push(urlDatabase[item]);
+    }
+  }
+
+  return { urls, items };
+};
+
 //*******************
 // Home Page
 //*******************
@@ -114,25 +139,28 @@ app.get("/", (req, res) => {
 app.get("/urls", (req, res) => {
   // If not logged in,
   // Show message: log in or register first
-  const templateVars = {};
+  const templateVars = {
+    id: req.cookies.user_id,
+    user: "",
+    urls: "",
+    message: "",
+  };
 
   if (!req.cookies.user_id) {
     // res.redirect("/login");
-    console.log("Show message");
-
     templateVars.message = "Please login or register to see URLs";
-    templateVars.user = null;
-    templateVars.urls = null;
-
-    console.log("templateVars", templateVars);
   }
 
   if (req.cookies.user_id) {
+    const currentUserURL = urlsForUser(req.cookies.user_id);
+    // console.log("currentUserURL", currentUserURL);
+    console.log("currentUserURL", currentUserURL);
+
     templateVars.user = users[req.cookies.user_id];
-    templateVars.urls = urlDatabase;
-    templateVars.message = null;
+    templateVars.urls = currentUserURL;
   }
 
+  console.log("templateVars", templateVars);
   res.render("urls_index", templateVars);
 });
 
@@ -182,7 +210,6 @@ app.post("/login", (req, res) => {
 //*******************
 
 app.post("/logout", (req, res) => {
-  console.log("req.cookies.user_id", req.cookies.user_id);
   res.clearCookie("user_id");
   res.redirect("/login");
 });
@@ -296,7 +323,6 @@ app.get("/urls/:id", (req, res) => {
     id: req.params.id,
     url: urlDatabase[req.params.id],
   };
-  console.log("templateVars", templateVars.urls);
   res.render("urls_show", templateVars);
 });
 
