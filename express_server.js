@@ -77,16 +77,16 @@ const generateRandomString = () => {
 // Find User by Email
 //*******************
 
-// const getUserByEmail = (input) => {
-//   let foundUser = null;
+const getUserByEmail = (input) => {
+  let foundUser = null;
 
-//   for (const user in users) {
-//     if (users[user].email === input) {
-//       foundUser = users[user];
-//     }
-//   }
-//   return foundUser;
-// };
+  for (const user in users) {
+    if (users[user].email === input) {
+      foundUser = users[user];
+    }
+  }
+  return foundUser;
+};
 
 //*******************
 // Home Page
@@ -152,7 +152,7 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   res.clearCookie(req.cookies.user_id);
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 //*******************
@@ -166,18 +166,6 @@ app.get("/register", (req, res) => {
 //*******************
 // Register - POST
 //*******************
-
-const getUserByEmail = (input) => {
-  let foundUser = null;
-
-  for (const user in users) {
-    console.log("users[user].email", users[user].email);
-    if (users[user].email === input) {
-      foundUser = users[user];
-    }
-  }
-  return foundUser;
-};
 
 app.post("/register", (req, res) => {
   const email = req.body.email;
