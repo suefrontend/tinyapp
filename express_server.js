@@ -230,13 +230,16 @@ app.post("/urls", (req, res) => {
     return res.status(400).send("You must login to create a short URL");
   }
 
-  if (req.cookies.user_id) {
+  if (req.cookies.user_id && req.body.longURL) {
     const id = generateRandomString();
-    urlDatabase[id] = req.body.longURL;
+
+    urlDatabase[id] = {
+      longURL: req.body.longURL,
+      userID: req.cookies.user_id,
+    };
+
     res.redirect(`/u/${id}`);
   }
-
-  console.log("urldatabase", urlDatabase);
 });
 
 //*******************
@@ -291,11 +294,8 @@ app.get("/urls/:id", (req, res) => {
 //*******************
 
 app.post("/urls/:id", (req, res) => {
-  // Update urlDatabase
   const itemToEdit = urlDatabase[req.params.id];
-  // console.log("itemToEdit", itemToEdit);
-  // console.log("itemToEdit.longURL", itemToEdit.longURL);
-  // console.log("req.body.updatedURL.longURL", req.body.updatedURL);
+
   itemToEdit.longURL = req.body.updatedURL;
   res.redirect("/urls");
 });
