@@ -144,7 +144,6 @@ app.get("/urls", (req, res) => {
   };
 
   if (!req.cookies.user_id) {
-    // res.redirect("/login");
     templateVars.message = "Please login or register to see URLs";
   }
 
@@ -152,8 +151,8 @@ app.get("/urls", (req, res) => {
     const currentUserURL = urlsForUser(req.cookies.user_id);
 
     templateVars.user = users[req.cookies.user_id];
-    // templateVars.urls = currentUserURL;
-    templateVars.urls = urlDatabase;
+    templateVars.urls = currentUserURL; // -> Real data
+    // templateVars.urls = urlDatabase; // Temporary display all data
   }
   // console.log("tempvar", templateVars.urls);
   res.render("urls_index", templateVars);
@@ -320,19 +319,27 @@ app.get("/u/:id", (req, res) => {
 // };
 
 app.get("/urls/:id", (req, res) => {
-  if (!urlDatabase[req.params.id]) {
+  const currentUser = req.cookies.user_id; //
+  const itemToEdit = req.params.id;
+
+  if (!urlDatabase[itemToEdit]) {
     return res.status(400).send("The URL doesn't exist.");
   }
 
   // If not loggin error message
-  if (!req.cookies.user_id) {
+  if (!currentUser) {
     return res.status(400).send("You must login to access to this page.");
   }
 
+  const urlOwner = urlDatabase[itemToEdit].userID; // aJ48lW
+  if (urlOwner !== currentUser) {
+    return res.status(403).send("You DONT have access to delete this.");
+  }
+
   const templateVars = {
-    user: users[req.cookies.user_id],
-    id: req.params.id,
-    url: urlDatabase[req.params.id],
+    user: users[currentUser],
+    id: itemToEdit,
+    url: urlDatabase[itemToEdit],
   };
   res.render("urls_show", templateVars);
 });
@@ -356,6 +363,10 @@ app.post("/urls/:id/delete", (req, res) => {
   const currentUser = req.cookies.user_id; //
   const itemToDelete = req.params.id;
   const urlOwner = urlDatabase[itemToDelete].userID; // aJ48lW
+
+  if (!currentUser) {
+    return res.status(403).send("You must login.");
+  }
 
   if (urlOwner !== currentUser) {
     return res.status(403).send("You DONT have access to delete this.");

@@ -40,7 +40,7 @@
               <td><%= item %>(<%= urls[item].userID %>)</td>
               <td><%= urls[item].longURL %></td>
               <td>
-                <form method="GET" action="/urls/<%= id %>">
+                <form method="GET" action="/urls/<%= item %>">
                   <button class="btn btn-outline-primary" type="submit">Edit</button>
                 </form>
               </td>
