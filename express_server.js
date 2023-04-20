@@ -1,5 +1,6 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const bcrypt = require("bcryptjs");
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -62,12 +63,12 @@ const users = {
   aJ48lW: {
     id: "aJ48lW",
     email: "1@example.com",
-    password: "123",
+    password: "$2a$10$EhVbkPtEQgCqwHQYq6VkfuEl2nPgvjaJmKlSrFrcTCQd2UR883SDa", // 123
   },
   sgq3y6: {
     id: "sgq3y6",
     email: "2@example.com",
-    password: "123",
+    password: "$2a$10$Fiv3AgbWDsAciU3gPXKaKeB6uVP0m.UZbsl1GbrGrHaXDPW7Z3zMa", // 456
   },
 };
 
@@ -100,6 +101,8 @@ const getUserByEmail = (input) => {
   let foundUser = null;
 
   for (const user in users) {
+    console.log("user", user);
+    console.log("users", users);
     if (users[user].email === input) {
       foundUser = users[user];
     }
@@ -154,7 +157,7 @@ app.get("/urls", (req, res) => {
     templateVars.urls = currentUserURL; // -> Real data
     // templateVars.urls = urlDatabase; // Temporary display all data
   }
-  // console.log("tempvar", templateVars.urls);
+  console.log("users", users);
   res.render("urls_index", templateVars);
 });
 
@@ -181,7 +184,19 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(req.body.password, 10);
   const currentUser = getUserByEmail(email);
+  // const getUserByEmail = (input) => {
+  //   let foundUser = null;
+
+  //   for (const user in users) {
+  //     if (users[user].email === input) {
+  //       foundUser = users[user];
+  //     }
+  //   }
+  //   return foundUser;
+  // };
+  console.log("currentUser", currentUser);
 
   if (!email || !password) {
     res.status(400).send("Please fill out all fields");
@@ -191,8 +206,14 @@ app.post("/login", (req, res) => {
     res.status(403).send("Can't find the email");
   }
 
-  if (currentUser.email === email && currentUser.password !== password) {
-    res.status(403).send("Password doen't match");
+  const validPassword = bcrypt.compareSync(password, hashedPassword);
+
+  // if (currentUser.email === email && currentUser.password !== password) {
+  //   res.status(403).send("Password doen't match");
+  // }
+
+  if (validPassword && currentUser.email === email) {
+    console.log("OK");
   }
 
   res.cookie("user_id", currentUser.id);
@@ -230,6 +251,7 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(req.body.password, 10);
   const currentUser = getUserByEmail(email);
 
   if (!email || !password) {
@@ -245,11 +267,12 @@ app.post("/register", (req, res) => {
   const newUser = {
     id,
     email,
-    password,
+    hashedPassword,
   };
 
   users[id] = newUser;
   res.cookie("user_id", id);
+  console.log("New Cookie!:", req.cookies.user_id);
   res.redirect("/urls");
 });
 
