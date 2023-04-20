@@ -46,7 +46,7 @@ const urlDatabase = {
   },
   i3BoGr: {
     longURL: "https://www.google.ca",
-    userID: "aJ48lW",
+    userID: "sgq3y6",
   },
 };
 
@@ -112,16 +112,27 @@ app.get("/", (req, res) => {
 //*******************
 
 app.get("/urls", (req, res) => {
+  // If not logged in,
+  // Show message: log in or register first
+  const templateVars = {};
+
   if (!req.cookies.user_id) {
-    res.redirect("/login");
+    // res.redirect("/login");
+    console.log("Show message");
+
+    templateVars.message = "Please login or register to see URLs";
+    templateVars.user = null;
+    templateVars.urls = null;
+
+    console.log("templateVars", templateVars);
   }
 
-  const templateVars = {
-    user: users[req.cookies.user_id],
-    urls: urlDatabase,
-  };
+  if (req.cookies.user_id) {
+    templateVars.user = users[req.cookies.user_id];
+    templateVars.urls = urlDatabase;
+    templateVars.message = null;
+  }
 
-  console.log("templateVars", templateVars.urls);
   res.render("urls_index", templateVars);
 });
 
