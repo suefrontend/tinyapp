@@ -16,14 +16,10 @@ app.use(cookieParser());
 // URL Data
 //*******************
 
-const urlDatabase = {
-  b2xVn2: "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
-};
-
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
+// const urlDatabase = {
+//   b2xVn2: "http://www.lighthouselabs.ca",
+//   "9sm5xK": "http://www.google.com",
+// };
 
 //*******************
 // Users Data
@@ -43,18 +39,33 @@ app.get("/urls.json", (req, res) => {
 //   },
 // };
 
+const urlDatabase = {
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
+};
+
 const users = {
-  1: {
-    id: "1",
+  aJ48lW: {
+    id: "aJ48lW",
     email: "1@example.com",
     password: "123",
   },
-  2: {
-    id: "2",
+  sgq3y6: {
+    id: "sgq3y6",
     email: "2@example.com",
     password: "123",
   },
 };
+
+app.get("/urls.json", (req, res) => {
+  res.json(urlDatabase);
+});
 
 //*******************
 // Generate String
@@ -109,6 +120,8 @@ app.get("/urls", (req, res) => {
     user: users[req.cookies.user_id],
     urls: urlDatabase,
   };
+
+  console.log("templateVars", templateVars.urls);
   res.render("urls_index", templateVars);
 });
 
@@ -253,7 +266,7 @@ app.get("/u/:id", (req, res) => {
   const templateVars = {
     user: users[req.cookies.user_id],
     id: req.params.id,
-    longURL: urlDatabase[req.params.id],
+    url: urlDatabase[req.params.id],
   };
 
   res.render("urls_show", templateVars);
@@ -267,8 +280,9 @@ app.get("/urls/:id", (req, res) => {
   const templateVars = {
     user: users[req.cookies.user_id],
     id: req.params.id,
-    longURL: urlDatabase[req.params.id],
+    url: urlDatabase[req.params.id],
   };
+  console.log("templateVars", templateVars.urls);
   res.render("urls_show", templateVars);
 });
 
@@ -278,7 +292,11 @@ app.get("/urls/:id", (req, res) => {
 
 app.post("/urls/:id", (req, res) => {
   // Update urlDatabase
-  urlDatabase[req.params.id] = req.body.updatedURL;
+  const itemToEdit = urlDatabase[req.params.id];
+  // console.log("itemToEdit", itemToEdit);
+  // console.log("itemToEdit.longURL", itemToEdit.longURL);
+  // console.log("req.body.updatedURL.longURL", req.body.updatedURL);
+  itemToEdit.longURL = req.body.updatedURL;
   res.redirect("/urls");
 });
 
