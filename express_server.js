@@ -246,19 +246,23 @@ app.get("/urls/new", (req, res) => {
 //*******************
 
 app.get("/u/:id", (req, res) => {
+  if (!urlDatabase[req.params.id]) {
+    return res.status(400).send("The URL doesn't exist.");
+  }
+
   const templateVars = {
     user: users[req.cookies.user_id],
     id: req.params.id,
     longURL: urlDatabase[req.params.id],
   };
-  if (!urlDatabase[req.params.id]) {
-    res.send("The URL doesn't exist.");
-  }
+
   res.render("urls_show", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
-  console.log("req", req);
+  if (!urlDatabase[req.params.id]) {
+    return res.status(400).send("The URL doesn't exist.");
+  }
 
   const templateVars = {
     user: users[req.cookies.user_id],
