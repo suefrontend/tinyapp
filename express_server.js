@@ -133,11 +133,14 @@ app.get("/", (req, res) => {
 app.get("/urls", (req, res) => {
   // If not logged in,
   // Show message: log in or register first
+  // console.log("urlDatabase", urlDatabase);
+
   const templateVars = {
     id: req.cookies.user_id,
     user: "",
     urls: "",
     message: "",
+    params: req.cookies.user_id,
   };
 
   if (!req.cookies.user_id) {
@@ -149,9 +152,10 @@ app.get("/urls", (req, res) => {
     const currentUserURL = urlsForUser(req.cookies.user_id);
 
     templateVars.user = users[req.cookies.user_id];
-    templateVars.urls = currentUserURL;
+    // templateVars.urls = currentUserURL;
+    templateVars.urls = urlDatabase;
   }
-
+  // console.log("tempvar", templateVars.urls);
   res.render("urls_index", templateVars);
 });
 
@@ -304,6 +308,17 @@ app.get("/u/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+// Cookie中のユーザーのアイテムのみをフィルター
+// const urlsForUser = (id) => {
+//   const filteredUrls = {};
+//   for (const key in urlDatabase) {
+//     if (urlDatabase[key].userID === id) {
+//       filteredUrls[key] = urlDatabase[key];
+//     }
+//   }
+//   return filteredUrls;
+// };
+
 app.get("/urls/:id", (req, res) => {
   if (!urlDatabase[req.params.id]) {
     return res.status(400).send("The URL doesn't exist.");
@@ -338,7 +353,15 @@ app.post("/urls/:id", (req, res) => {
 //*******************
 
 app.post("/urls/:id/delete", (req, res) => {
-  delete urlDatabase[req.params.id];
+  const currentUser = req.cookies.user_id; //
+  const itemToDelete = req.params.id;
+  const urlOwner = urlDatabase[itemToDelete].userID; // aJ48lW
+
+  if (urlOwner !== currentUser) {
+    return res.status(403).send("You DONT have access to delete this.");
+  }
+
+  delete urlDatabase[itemToDelete];
 
   res.redirect("/urls");
 });
