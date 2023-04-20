@@ -101,7 +101,10 @@ app.get("/", (req, res) => {
 //*******************
 
 app.get("/urls", (req, res) => {
-  console.log("users", users);
+  if (!req.cookies.user_id) {
+    res.redirect("/login");
+  }
+
   const templateVars = {
     user: users[req.cookies.user_id],
     urls: urlDatabase,
@@ -114,6 +117,10 @@ app.get("/urls", (req, res) => {
 //*******************
 
 app.get("/login", (req, res) => {
+  if (req.cookies.user_id) {
+    res.redirect("/urls");
+  }
+
   const templateVars = {
     user: users[req.cookies.user_id],
     urls: urlDatabase,
@@ -161,6 +168,10 @@ app.post("/logout", (req, res) => {
 //*******************
 
 app.get("/register", (req, res) => {
+  if (req.cookies.user_id) {
+    res.redirect("/urls");
+  }
+
   const templateVars = {
     user: users[req.cookies.user_id],
   };
@@ -202,9 +213,17 @@ app.post("/register", (req, res) => {
 //*******************
 
 app.post("/urls", (req, res) => {
-  const id = generateRandomString();
-  urlDatabase[id] = req.body.longURL;
-  res.redirect(`/u/${id}`);
+  if (!req.cookies.user_id) {
+    return res.status(400).send("You must login to create a short URL");
+  }
+
+  if (req.cookies.user_id) {
+    const id = generateRandomString();
+    urlDatabase[id] = req.body.longURL;
+    res.redirect(`/u/${id}`);
+  }
+
+  console.log("urldatabase", urlDatabase);
 });
 
 //*******************
@@ -212,6 +231,10 @@ app.post("/urls", (req, res) => {
 //*******************
 
 app.get("/urls/new", (req, res) => {
+  if (!req.cookies.user_id) {
+    res.redirect("/login");
+  }
+
   const templateVars = {
     user: users[req.cookies.user_id],
   };
