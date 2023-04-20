@@ -109,19 +109,13 @@ const getUserByEmail = (input) => {
 
 // returns the URLs where the userID is equal to the id of the currently logged-in user.
 const urlsForUser = (id) => {
-  // b6UTxQ, J0y1irv
-  const urls = [];
-  const items = [];
-
-  for (const item in urlDatabase) {
-    if (urlDatabase[item].userID === id) {
-      console.log("item", item);
-      urls.push(item);
-      items.push(urlDatabase[item]);
+  const filteredUrls = {};
+  for (const key in urlDatabase) {
+    if (urlDatabase[key].userID === id) {
+      filteredUrls[key] = urlDatabase[key];
     }
   }
-
-  return { urls, items };
+  return filteredUrls;
 };
 
 //*******************
@@ -153,14 +147,11 @@ app.get("/urls", (req, res) => {
 
   if (req.cookies.user_id) {
     const currentUserURL = urlsForUser(req.cookies.user_id);
-    // console.log("currentUserURL", currentUserURL);
-    console.log("currentUserURL", currentUserURL);
 
     templateVars.user = users[req.cookies.user_id];
     templateVars.urls = currentUserURL;
   }
 
-  console.log("templateVars", templateVars);
   res.render("urls_index", templateVars);
 });
 
@@ -316,6 +307,11 @@ app.get("/u/:id", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   if (!urlDatabase[req.params.id]) {
     return res.status(400).send("The URL doesn't exist.");
+  }
+
+  // If not loggin error message
+  if (!req.cookies.user_id) {
+    return res.status(400).send("You must login to access to this page.");
   }
 
   const templateVars = {
