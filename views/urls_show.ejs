@@ -22,6 +22,7 @@
         </p>
       </div>
 
+      <% if (user) { %>
       <div class="card-footer text-muted">
         <h5 class="card-title">Edit</h5>
         <form method="POST" action="/urls/<%= id %>">
@@ -29,6 +30,7 @@
           <button class="btn btn-primary" type="submit">Submit</button>
         </form>
       </div>
+      <% } %>
     </div>
     <!-- Bootstrap JS -->
     <script

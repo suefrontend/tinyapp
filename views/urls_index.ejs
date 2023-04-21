@@ -37,7 +37,7 @@
         <tbody>
           <% for (let item in urls) { %>
             <tr>
-              <td><%= item %>(<%= urls[item].userID %>)</td>
+              <td><%= item %></td>
               <td><%= urls[item].longURL %></td>
               <td>
                 <form method="GET" action="/urls/<%= item %>">
@@ -54,7 +54,9 @@
         </tbody>
       </table>
       <% } %>
-
+      <% if (user) { %>
+      <a href="/urls/new" class="btn btn-primary">Create a New Short Link</a>
+      <% } %>
     </main>
     <!-- Bootstrap JS -->
     <script
