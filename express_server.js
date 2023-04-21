@@ -1,6 +1,7 @@
 const express = require("express");
 // const cookieParser = require("cookie-parser");
 const cookieSession = require("cookie-session");
+const getUserByEmail = require("./helpers");
 const bcrypt = require("bcryptjs");
 const app = express();
 const PORT = 8080; // default port 8080
@@ -104,19 +105,6 @@ const generateRandomString = () => {
 // Find User by Email
 //*******************
 
-const getUserByEmail = (input) => {
-  let foundUser = null;
-
-  for (const user in users) {
-    console.log("user", user);
-    console.log("users", users);
-    if (users[user].email === input) {
-      foundUser = users[user];
-    }
-  }
-  return foundUser;
-};
-
 // returns the URLs where the userID is equal to the id of the currently logged-in user.
 const urlsForUser = (id) => {
   const filteredUrls = {};
@@ -165,7 +153,7 @@ app.get("/urls", (req, res) => {
     templateVars.urls = currentUserURL; // -> Real data
     // templateVars.urls = urlDatabase; // Temporary display all data
   }
-  console.log("users", users);
+  // console.log("users", users);
   res.render("urls_index", templateVars);
 });
 
@@ -175,6 +163,7 @@ app.get("/urls", (req, res) => {
 
 app.get("/login", (req, res) => {
   const userId = req.session.userId;
+  console.log("userId", userId);
 
   if (userId) {
     res.redirect("/urls");
@@ -195,7 +184,7 @@ app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const hashedPassword = bcrypt.hashSync(req.body.password, 10);
-  const currentUser = getUserByEmail(email);
+  const currentUser = getUserByEmail(email, users);
   // const getUserByEmail = (input) => {
   //   let foundUser = null;
 
@@ -209,11 +198,11 @@ app.post("/login", (req, res) => {
   console.log("currentUser", currentUser);
 
   if (!email || !password) {
-    res.status(400).send("Please fill out all fields");
+    return res.status(400).send("Please fill out all fields");
   }
 
   if (!currentUser) {
-    res.status(403).send("Can't find the email");
+    return res.status(403).send("Can't find the email");
   }
 
   const validPassword = bcrypt.compareSync(password, hashedPassword);
@@ -266,7 +255,7 @@ app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const hashedPassword = bcrypt.hashSync(req.body.password, 10);
-  const currentUser = getUserByEmail(email);
+  const currentUser = getUserByEmail(email, users);
 
   if (!email || !password) {
     return res.status(400).send("Please fill out all fields");
