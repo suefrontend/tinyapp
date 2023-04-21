@@ -1,7 +1,7 @@
 const express = require("express");
 // const cookieParser = require("cookie-parser");
 const cookieSession = require("cookie-session");
-const getUserByEmail = require("./helpers");
+const { getUserByEmail } = require("./helpers");
 const bcrypt = require("bcryptjs");
 const app = express();
 const PORT = 8080; // default port 8080
@@ -185,17 +185,6 @@ app.post("/login", (req, res) => {
   const password = req.body.password;
   const hashedPassword = bcrypt.hashSync(req.body.password, 10);
   const currentUser = getUserByEmail(email, users);
-  // const getUserByEmail = (input) => {
-  //   let foundUser = null;
-
-  //   for (const user in users) {
-  //     if (users[user].email === input) {
-  //       foundUser = users[user];
-  //     }
-  //   }
-  //   return foundUser;
-  // };
-  console.log("currentUser", currentUser);
 
   if (!email || !password) {
     return res.status(400).send("Please fill out all fields");
@@ -212,12 +201,10 @@ app.post("/login", (req, res) => {
   // }
 
   if (validPassword && currentUser.email === email) {
-    console.log("OK");
+    // console.log("OK");
+    req.session.userId = currentUser.id;
+    res.redirect("/urls");
   }
-
-  // res.cookie("user_id", currentUser.id);
-  req.session.userId = currentUser.id;
-  res.redirect("/urls");
 });
 
 //*******************

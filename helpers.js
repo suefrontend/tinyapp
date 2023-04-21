@@ -1,5 +1,5 @@
 const getUserByEmail = (input, data) => {
-  let foundUser = null;
+  let foundUser = undefined;
 
   for (const user in data) {
     // console.log("user", user);
@@ -11,4 +11,4 @@ const getUserByEmail = (input, data) => {
   return foundUser;
 };
 
-module.exports = getUserByEmail;
+module.exports = { getUserByEmail };
