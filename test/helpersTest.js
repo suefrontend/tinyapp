@@ -1,9 +1,6 @@
 const { assert } = require("chai");
-// const { expect } = require("chai");
 
-const { getUserByEmail } = require("../helpers.js");
-
-console.log("getUserByEmail", getUserByEmail);
+const { getUserByEmail, urlsForUser } = require("../helpers.js");
 
 const testUsers = {
   userRandomID: {
@@ -17,18 +14,44 @@ const testUsers = {
     password: "dishwasher-funk",
   },
 };
+const testURLs = {
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "userRandomID",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "user2RandomID",
+  },
+  J0y1irv: {
+    longURL: "http://test05.com",
+    userID: "userRandomID",
+  },
+  tANiLG1: {
+    longURL: "http://test.com",
+    userID: "user2RandomID",
+  },
+};
 
-describe("getUserByEmail", function () {
-  it("should return a user with valid email", function () {
+describe("getUserByEmail", function() {
+  it("should return a user with valid email", function() {
     const user = getUserByEmail("user@example.com", testUsers);
     const expectedUserID = "userRandomID";
-    // Write your assert statement here
-    assert(user, expectedUserID);
+    assert.equal(user.id, expectedUserID);
   });
-  it("should return undefined if email is not in users database", function () {
+  it("should return undefined if email is not in users database", function() {
     const user = getUserByEmail("dummy@example.com", testUsers);
-    // const expectedUserID = "userRandomID";
-    // Write your assert statement here
     assert.isUndefined(user);
+  });
+});
+
+describe("urlsForUser", function() {
+  it("should return the URLs where the userID is equal to the id of the currently logged-in user", function() {
+    const urls = urlsForUser("userRandomID", testURLs);
+    const expectedURLs = {
+      b6UTxQ: { longURL: "https://www.tsn.ca", userID: "userRandomID" },
+      J0y1irv: { longURL: "http://test05.com", userID: "userRandomID" },
+    };
+    assert.deepEqual(urls, expectedURLs);
   });
 });

@@ -1,13 +1,8 @@
-//*******************
 // Find User by Email
-//*******************
-
 const getUserByEmail = (input, data) => {
   let foundUser = undefined;
 
   for (const user in data) {
-    // console.log("user", user);
-    // console.log("data", data);
     if (data[user].email === input) {
       foundUser = data[user];
     }
@@ -15,10 +10,7 @@ const getUserByEmail = (input, data) => {
   return foundUser;
 };
 
-//*******************
 // Generate String
-//*******************
-
 const generateRandomString = () => {
   let result = "";
   const characters =
@@ -32,11 +24,7 @@ const generateRandomString = () => {
   return result;
 };
 
-//*******************
 // Find URLs by user
-//*******************
-
-// returns the URLs where the userID is equal to the id of the currently logged-in user.
 const urlsForUser = (id, data) => {
   const filteredUrls = {};
   for (const key in data) {

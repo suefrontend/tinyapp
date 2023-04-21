@@ -104,6 +104,7 @@ app.get("/urls", (req, res) => {
 
   if (userId) {
     const currentUserURL = urlsForUser(userId, urlDatabase);
+    console.log("currentUserURL", currentUserURL);
 
     templateVars.user = users[userId];
     templateVars.urls = currentUserURL;
