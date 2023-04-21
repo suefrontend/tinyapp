@@ -241,7 +241,7 @@ app.post("/urls", (req, res) => {
 });
 
 //*******************
-// Create URL Page
+// Create URL - GET
 //*******************
 
 app.get("/urls/new", (req, res) => {
@@ -258,7 +258,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 //*******************
-// Short URL Page
+// URL Redirect - GET
 //*******************
 
 app.get("/u/:id", (req, res) => {
@@ -271,6 +271,10 @@ app.get("/u/:id", (req, res) => {
 
   res.redirect(longURLObj.longURL);
 });
+
+//*******************
+// Short URL - GET
+//*******************
 
 app.get("/urls/:id", (req, res) => {
   const userId = req.session.userId;
@@ -333,6 +337,10 @@ app.post("/urls/:id/delete", (req, res) => {
 
   res.redirect("/urls");
 });
+
+//*******************
+// Start App
+//*******************
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
